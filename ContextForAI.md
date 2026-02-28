@@ -5,6 +5,7 @@
 **nanobot** is an ultra-lightweight personal AI assistant framework written in Python. It delivers core agent functionality in approximately **4,000 lines of code** (99% smaller than comparable projects like Clawdbot's 430k+ lines).
 
 ### Key Characteristics
+
 - **Ultra-Lightweight**: ~4,000 lines of core agent code
 - **Multi-Channel**: Supports Telegram, Discord, WhatsApp, Feishu, Slack, Email, QQ, DingTalk, Matrix, and Mochat
 - **Multi-Provider**: Supports 15+ LLM providers including OpenRouter, Anthropic, OpenAI, DeepSeek, Groq, Gemini, and local vLLM
@@ -35,6 +36,7 @@ nanobot/
 ### Installation
 
 **From source (development):**
+
 ```bash
 git clone https://github.com/HKUDS/nanobot.git
 cd nanobot
@@ -42,16 +44,19 @@ pip install -e .
 ```
 
 **With uv (recommended):**
+
 ```bash
 uv tool install nanobot-ai
 ```
 
 **From PyPI:**
+
 ```bash
 pip install nanobot-ai
 ```
 
 ### Development Dependencies
+
 ```bash
 pip install -e ".[dev]"
 # or
@@ -61,6 +66,7 @@ uv pip install -e ".[dev]"
 ### Running Commands
 
 **CLI Commands:**
+
 ```bash
 nanobot --help           # Show all commands
 nanobot onboard          # Initialize configuration
@@ -71,6 +77,7 @@ nanobot provider login   # OAuth login for providers
 ```
 
 **Testing:**
+
 ```bash
 pytest
 # or
@@ -78,12 +85,14 @@ pytest tests/
 ```
 
 **Code Formatting:**
+
 ```bash
 ruff check .
 ruff format .
 ```
 
 **Docker:**
+
 ```bash
 docker-compose up nanobot-gateway
 docker-compose run nanobot-cli agent
@@ -94,6 +103,7 @@ docker-compose run nanobot-cli agent
 Config file location: `~/.nanobot/config.json`
 
 **Basic setup:**
+
 ```json
 {
   "providers": {
@@ -113,23 +123,27 @@ Config file location: `~/.nanobot/config.json`
 ## Development Conventions
 
 ### Code Style
+
 - **Formatter**: ruff (line-length: 100, target: Python 3.11+)
 - **Linting**: ruff with E, F, I, N, W rules (E501 ignored)
 - **Type Hints**: Uses Python type hints throughout
 - **Imports**: Sorted automatically by ruff (I rule)
 
 ### Project Structure
+
 - **Python Version**: 3.11+
 - **Package Manager**: Supports pip, uv, and hatchling build system
 - **Dependencies**: Managed in `pyproject.toml`
 - **Optional Dependencies**: `matrix` for Matrix support, `dev` for development
 
 ### Testing Practices
+
 - **Framework**: pytest with pytest-asyncio
 - **Test Location**: `tests/` directory
 - **Async Mode**: Auto mode for asyncio tests
 
 ### Git Conventions
+
 - Commit messages should be concise and focused
 - Sign off commits with signature (e.g., `<msg>. - QwenCode`)
 - Review changes before committing
@@ -137,14 +151,17 @@ Config file location: `~/.nanobot/config.json`
 ### Adding New Components
 
 **New Provider (2 steps):**
+
 1. Add `ProviderSpec` entry to `nanobot/providers/registry.py`
 2. Add field to `ProvidersConfig` in `nanobot/config/schema.py`
 
 **New Channel:**
+
 - Create `nanobot/channels/<channel>.py`
 - Implement channel-specific logic following existing patterns
 
 **New Skill:**
+
 - Create directory under `nanobot/skills/<skill-name>/`
 - Include `SKILL.md` with YAML frontmatter and instructions
 
@@ -166,22 +183,28 @@ Config file location: `~/.nanobot/config.json`
 ## Core Concepts
 
 ### Event Bus
+
 Uses a simple event bus pattern with `InboundMessage` and `OutboundMessage` dataclasses for channel communication.
 
 ### Session Management
+
 Sessions are keyed by `channel:chat_id` for multi-user support with thread isolation.
 
 ### Agent Loop
+
 The agent runs a continuous loop handling:
+
 1. Message reception via channels
 2. Context building and memory retrieval
 3. LLM invocation with tool calling
 4. Response generation and delivery
 
 ### Tools
+
 Built-in tools include: web search, file system operations, shell commands, cron scheduling, MCP tools, and message handling.
 
 ### Memory
+
 Redesigned memory system for efficient context management across conversations.
 
 ## Line Count Verification
@@ -189,4 +212,5 @@ Redesigned memory system for efficient context management across conversations.
 Run `bash core_agent_lines.sh` to verify the core agent line count (excludes channels/, cli/, providers/ adapters).
 
 ## Version
+
 Current version: **0.1.4.post2**

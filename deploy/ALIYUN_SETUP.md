@@ -14,7 +14,7 @@
 
 ### 1. Create Registry (First Time)
 
-1. Visit https://cr.console.aliyun.com/
+1. Visit <https://cr.console.aliyun.com/>
 2. Create **Personal Edition** (免费)
 3. Set **Fixed Password** at: 访问凭证 → 固定密码
 4. Create **Namespace** at: 命名空间
