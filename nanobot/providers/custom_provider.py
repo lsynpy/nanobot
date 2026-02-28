@@ -1,4 +1,4 @@
-"""Direct OpenAI-compatible provider — bypasses LiteLLM."""
+"""DashScope provider - Alibaba Cloud Qwen models."""
 
 from __future__ import annotations
 
@@ -10,12 +10,18 @@ from openai import AsyncOpenAI
 from nanobot.providers.base import LLMProvider, LLMResponse, ToolCallRequest
 
 
-class CustomProvider(LLMProvider):
+class DashScopeProvider(LLMProvider):
+    """
+    DashScope provider for Alibaba Cloud Qwen models.
+
+    Uses OpenAI-compatible API endpoint.
+    """
+
     def __init__(
         self,
-        api_key: str = "no-key",
-        api_base: str = "http://localhost:8000/v1",
-        default_model: str = "default",
+        api_key: str,
+        api_base: str = "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        default_model: str = "qwen3.5-plus",
     ):
         super().__init__(api_key, api_base)
         self.default_model = default_model

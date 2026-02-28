@@ -46,8 +46,8 @@ def test_init_prompt_session_creates_session():
     commands._PROMPT_SESSION = None
 
     with (
-        patch("nanobot.cli.commands.PromptSession") as MockSession,
-        patch("nanobot.cli.commands.FileHistory") as MockHistory,
+        patch("nanobot.cli.commands.PromptSession") as mock_session,
+        patch("nanobot.cli.commands.FileHistory"),
         patch("pathlib.Path.home") as mock_home,
     ):
         mock_home.return_value = MagicMock()
@@ -55,7 +55,7 @@ def test_init_prompt_session_creates_session():
         commands._init_prompt_session()
 
         assert commands._PROMPT_SESSION is not None
-        MockSession.assert_called_once()
-        _, kwargs = MockSession.call_args
+        mock_session.assert_called_once()
+        _, kwargs = mock_session.call_args
         assert kwargs["multiline"] is False
         assert kwargs["enable_open_in_editor"] is False

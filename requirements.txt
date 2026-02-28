@@ -1,13 +1,13 @@
-# nanobot ultra-slim dependencies (DashScope/Custom provider only)
-# No LiteLLM at runtime, no WhatsApp bridge
+# nanobot dependencies
+# Core runtime requirements
 
 # Core CLI
 typer>=0.20.0,<1.0.0
-rich>=14.0.0,<15.0.0
+rich>=14.0.0,<1.0.0
 prompt-toolkit>=3.0.50,<4.0.0
 loguru>=0.7.3,<1.0.0
 
-# OpenAI-compatible API client (for CustomProvider)
+# DashScope provider (OpenAI-compatible API)
 openai>=1.0.0,<2.0.0
 
 # Data validation
@@ -20,26 +20,14 @@ httpx>=0.28.0,<1.0.0
 websockets>=16.0,<17.0
 websocket-client>=1.9.0,<2.0.0
 
-# Feishu channel (lark-oapi)
+# Feishu channel
 lark-oapi>=1.5.0,<2.0.0
-
-# Other channels (optional)
-dingtalk-stream>=0.24.0,<1.0.0
-python-telegram-bot>=22.0,<23.0
-slack-sdk>=3.39.0,<4.0.0
-slackify-markdown>=0.2.0,<1.0.0
-python-socketio>=5.16.0,<6.0.0
-msgpack>=1.1.0,<2.0.0
 
 # Utilities
 croniter>=6.0.0,<7.0.0
 readability-lxml>=0.8.4,<1.0.0
 mcp>=1.26.0,<2.0.0
-oauth-cli-kit>=0.1.3,<1.0.0
 
 # SOCKS proxy support
 socksio>=1.0.0,<2.0.0
 python-socks[asyncio]>=2.8.0,<3.0.0
-
-# QQ bot (optional)
-qq-botpy>=1.2.0,<2.0.0

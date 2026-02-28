@@ -60,7 +60,7 @@ echo ""
 # Build and push
 docker buildx build \
   --platform "${PLATFORM}" \
-  -f Dockerfile.ultra \
+  -f Dockerfile \
   -t "${REGISTRY}/${ALIYUN_NAMESPACE}/nanobot:${NEW_VERSION}" \
   -t "${REGISTRY}/${ALIYUN_NAMESPACE}/nanobot:latest" \
   --push \

@@ -40,11 +40,11 @@
 
 - **2026-02-10** 🎉 Released **v0.1.3.post6** with improvements! Check the updates [notes](https://github.com/HKUDS/nanobot/releases/tag/v0.1.3.post6) and our [roadmap](https://github.com/HKUDS/nanobot/discussions/431).
 - **2026-02-09** 💬 Added Slack, Email, and QQ support — nanobot now supports multiple chat platforms!
-- **2026-02-08** 🔧 Refactored Providers—adding a new LLM provider now takes just 2 simple steps! Check [here](#providers).
-- **2026-02-07** 🚀 Released **v0.1.3.post5** with Qwen support & several key improvements! Check [here](https://github.com/HKUDS/nanobot/releases/tag/v0.1.3.post5) for details.
+- **2026-02-08** 🔧 Refactored Providers—adding a new LLM provider now takes just 2 simple steps! Check [how to add providers](#providers).
+- **2026-02-07** 🚀 Released **v0.1.3.post5** with Qwen support & several key improvements! Check [release notes](https://github.com/HKUDS/nanobot/releases/tag/v0.1.3.post5) for details.
 - **2026-02-06** ✨ Added Moonshot/Kimi provider, Discord integration, and enhanced security hardening!
 - **2026-02-05** ✨ Added Feishu channel, DeepSeek provider, and enhanced scheduled tasks support!
-- **2026-02-04** 🚀 Released **v0.1.3.post4** with multi-provider & Docker support! Check [here](https://github.com/HKUDS/nanobot/releases/tag/v0.1.3.post4) for details.
+- **2026-02-04** 🚀 Released **v0.1.3.post4** with multi-provider & Docker support! Check [release notes](https://github.com/HKUDS/nanobot/releases/tag/v0.1.3.post4) for details.
 - **2026-02-03** ⚡ Integrated vLLM for local LLM support and improved natural language task scheduling!
 - **2026-02-02** 🎉 nanobot officially launched! Welcome to try 🐈 nanobot!
 
@@ -946,6 +946,35 @@ The agent can also manage this file itself — ask it to "add a periodic task" a
 
 > [!TIP]
 > The `-v ~/.nanobot:/root/.nanobot` flag mounts your local config directory into the container, so your config and workspace persist across container restarts.
+
+### Pre-commit Hooks (Development)
+
+The Docker image includes pre-installed linting tools to avoid installation during commits:
+
+**Tools pre-installed:**
+
+- `ruff` - Python linting and formatting (from uv base image)
+- `pre-commit` - Git hooks framework
+- `pre-commit-hooks` - Common file checks
+- `rumdl` - Markdown linting (Rust, most popular - 878⭐)
+- `typos` - Spell checking (Rust, fast)
+
+**Usage:**
+
+```bash
+# Development with docker-compose
+docker compose run --rm nanobot-cli bash
+
+# Inside container: make changes, then commit
+git add .
+git commit -m "Your message"  # ✅ Hooks run automatically
+```
+
+**Resource-efficient:**
+
+- Tools installed at image build time (not during `git commit`)
+- Uses `language: system` to skip virtualenv creation
+- Minimal overhead - only runs on changed files
 
 ### Docker Compose
 

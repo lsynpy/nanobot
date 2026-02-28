@@ -28,7 +28,6 @@ try:
         CreateMessageRequest,
         CreateMessageRequestBody,
         Emoji,
-        GetFileRequest,
         GetMessageResourceRequest,
         P2ImMessageReceiveV1,
     )
@@ -392,12 +391,15 @@ class FeishuChannel(BaseChannel):
     @staticmethod
     def _parse_md_table(table_text: str) -> dict | None:
         """Parse a markdown table into a Feishu table element."""
-        lines = [l.strip() for l in table_text.strip().split("\n") if l.strip()]
+        lines = [line.strip() for line in table_text.strip().split("\n") if line.strip()]
         if len(lines) < 3:
             return None
-        split = lambda l: [c.strip() for c in l.strip("|").split("|")]
-        headers = split(lines[0])
-        rows = [split(l) for l in lines[2:]]
+
+        def split_line(line: str) -> list[str]:
+            return [cell.strip() for cell in line.strip("|").split("|")]
+
+        headers = split_line(lines[0])
+        rows = [split_line(line) for line in lines[2:]]
         columns = [
             {"tag": "column", "name": f"c{i}", "display_name": h, "width": "auto"}
             for i, h in enumerate(headers)

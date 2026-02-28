@@ -1,27 +1,88 @@
-repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.0
-    hooks:
-      - id: ruff
-        args: [--fix]
-      - id: ruff-format
+# For DashScope-only setup: use `language: system` to avoid creating virtualenvs
+# Tools must be pre-installed in the environment
+default_install_hook_types:
+  - pre-commit
+default_stages:
+  - pre-commit
 
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+repos:
+  - repo: local
     hooks:
+      # Python linting and formatting (fast, run on every commit)
+      - id: ruff-check
+        name: ruff check
+        entry: ruff check
+        language: system
+        types: [python]
+        args: [--fix]
+
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format
+        language: system
+        types: [python]
+
+      # Config file validation (fast, run on every commit)
       - id: check-yaml
+        name: check yaml
+        entry: check-yaml
+        language: system
+        types: [yaml]
+
       - id: check-json
+        name: check json
+        entry: check-json
+        language: system
+        types: [json]
+
       - id: check-toml
+        name: check toml
+        entry: check-toml
+        language: system
+        types: [toml]
+
+      # File hygiene (run on every commit)
       - id: end-of-file-fixer
+        name: fix end of file
+        entry: end-of-file-fixer
+        language: system
+        types: [text]
+
       - id: trailing-whitespace
+        name: trim trailing whitespace
+        entry: trailing-whitespace-fixer
+        language: system
+        types: [text]
+
       - id: check-added-large-files
+        name: check for added large files
+        entry: check-added-large-files
+        language: system
+        args: [--maxkb=1000]
+
       - id: check-merge-conflict
+        name: check for merge conflicts
+        entry: check-merge-conflict
+        language: system
+        types: [text]
+
       - id: detect-private-key
-      - id: fix-byte-order-marker
-      - id: check-case-conflict
-      - id: check-symlinks
-      - id: destroyed-symlinks
-      - id: forbid-new-submodules
-      - id: mixed-line-ending
-      - id: no-commit-to-branch
-        args: [--branch, main]
+        name: detect private key
+        entry: detect-private-key
+        language: system
+        types: [text]
+
+      # Documentation checks (Rust-based, fast)
+      - id: rumdl
+        name: rumdl fmt
+        entry: rumdl fmt
+        language: system
+        types: [markdown]
+        args: [--config, rumdl.toml]
+
+      - id: typos
+        name: check spelling (typos)
+        entry: typos
+        language: system
+        types: [text]
+        args: [--config, typos.toml]

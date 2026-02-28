@@ -1,0 +1,33 @@
+# Typos spell checker configuration
+# See: https://github.com/crate-ci/typos
+
+[default]
+extend-ignore-identifiers-re = [
+    ".*__pycache__.*",
+    ".*\\.venv.*",
+]
+
+[default.extend-words]
+# nanobot project-specific terms
+asyncio = "asyncio"
+openwrt = "openwrt"
+pyproject = "pyproject"
+pytest = "pytest"
+pyenv = "pyenv"
+venv = "venv"
+virtualenv = "virtualenv"
+Qwen = "Qwen"
+pre-commit = "pre-commit"
+DashScope = "DashScope"
+Feishu = "Feishu"
+lark = "lark"
+
+[files]
+extend-exclude = [
+    "*.lock",
+    "*.min.js",
+    "*.map",
+    "__pycache__/",
+    ".venv/",
+    "node_modules/",
+]
