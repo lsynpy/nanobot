@@ -14,16 +14,6 @@ KEEP_COUNT = MEMORY_WINDOW // 2  # 25
 
 
 def create_session_with_messages(key: str, count: int, role: str = "user") -> Session:
-    """Create a session and add the specified number of messages.
-
-    Args:
-        key: Session identifier
-        count: Number of messages to add
-        role: Message role (default: "user")
-
-    Returns:
-        Session with the specified messages
-    """
     session = Session(key=key)
     for i in range(count):
         session.add_message(role, f"msg{i}")
@@ -31,42 +21,21 @@ def create_session_with_messages(key: str, count: int, role: str = "user") -> Se
 
 
 def assert_messages_content(messages: list, start_index: int, end_index: int) -> None:
-    """Assert that messages contain expected content from start to end index.
-
-    Args:
-        messages: List of message dictionaries
-        start_index: Expected first message index
-        end_index: Expected last message index
-    """
     assert len(messages) > 0
     assert messages[0]["content"] == f"msg{start_index}"
     assert messages[-1]["content"] == f"msg{end_index}"
 
 
 def get_old_messages(session: Session, last_consolidated: int, keep_count: int) -> list:
-    """Extract messages that would be consolidated using the standard slice logic.
-
-    Args:
-        session: The session containing messages
-        last_consolidated: Index of last consolidated message
-        keep_count: Number of recent messages to keep
-
-    Returns:
-        List of messages that would be consolidated
-    """
     return session.messages[last_consolidated:-keep_count]
 
 
 class TestSessionLastConsolidated:
-    """Test last_consolidated tracking to avoid duplicate processing."""
-
     def test_initial_last_consolidated_zero(self) -> None:
-        """Test that new session starts with last_consolidated=0."""
         session = Session(key="test:initial")
         assert session.last_consolidated == 0
 
     def test_last_consolidated_persistence(self, tmp_path) -> None:
-        """Test that last_consolidated persists across save/load."""
         manager = SessionManager(Path(tmp_path))
         session1 = create_session_with_messages("test:persist", 20)
         session1.last_consolidated = 15
@@ -77,7 +46,6 @@ class TestSessionLastConsolidated:
         assert len(session2.messages) == 20
 
     def test_clear_resets_last_consolidated(self) -> None:
-        """Test that clear() resets last_consolidated to 0."""
         session = create_session_with_messages("test:clear", 10)
         session.last_consolidated = 5
 
@@ -87,15 +55,11 @@ class TestSessionLastConsolidated:
 
 
 class TestSessionImmutableHistory:
-    """Test Session message immutability for cache efficiency."""
-
     def test_initial_state(self) -> None:
-        """Test that new session has empty messages list."""
         session = Session(key="test:initial")
         assert len(session.messages) == 0
 
     def test_add_messages_appends_only(self) -> None:
-        """Test that adding messages only appends, never modifies."""
         session = Session(key="test:preserve")
         session.add_message("user", "msg1")
         session.add_message("assistant", "resp1")
@@ -104,7 +68,6 @@ class TestSessionImmutableHistory:
         assert session.messages[0]["content"] == "msg1"
 
     def test_get_history_returns_most_recent(self) -> None:
-        """Test get_history returns the most recent messages."""
         session = Session(key="test:history")
         for i in range(10):
             session.add_message("user", f"msg{i}")
@@ -116,21 +79,18 @@ class TestSessionImmutableHistory:
         assert history[-1]["content"] == "resp9"
 
     def test_get_history_with_all_messages(self) -> None:
-        """Test get_history with max_messages larger than actual."""
         session = create_session_with_messages("test:all", 5)
         history = session.get_history(max_messages=100)
         assert len(history) == 5
         assert history[0]["content"] == "msg0"
 
     def test_get_history_stable_for_same_session(self) -> None:
-        """Test that get_history returns same content for same max_messages."""
         session = create_session_with_messages("test:stable", 20)
         history1 = session.get_history(max_messages=10)
         history2 = session.get_history(max_messages=10)
         assert history1 == history2
 
     def test_messages_list_never_modified(self) -> None:
-        """Test that messages list is never modified after creation."""
         session = create_session_with_messages("test:immutable", 5)
         original_len = len(session.messages)
 
@@ -143,14 +103,11 @@ class TestSessionImmutableHistory:
 
 
 class TestSessionPersistence:
-    """Test Session persistence and reload."""
-
     @pytest.fixture
     def temp_manager(self, tmp_path):
         return SessionManager(Path(tmp_path))
 
     def test_persistence_roundtrip(self, temp_manager):
-        """Test that messages persist across save/load."""
         session1 = create_session_with_messages("test:persistence", 20)
         temp_manager.save(session1)
 
@@ -160,7 +117,6 @@ class TestSessionPersistence:
         assert session2.messages[-1]["content"] == "msg19"
 
     def test_get_history_after_reload(self, temp_manager):
-        """Test that get_history works correctly after reload."""
         session1 = create_session_with_messages("test:reload", 30)
         temp_manager.save(session1)
 
@@ -171,7 +127,6 @@ class TestSessionPersistence:
         assert history[-1]["content"] == "msg29"
 
     def test_clear_resets_session(self, temp_manager):
-        """Test that clear() properly resets session."""
         session = create_session_with_messages("test:clear", 10)
         assert len(session.messages) == 10
 
@@ -180,10 +135,7 @@ class TestSessionPersistence:
 
 
 class TestConsolidationTriggerConditions:
-    """Test consolidation trigger conditions and logic."""
-
     def test_consolidation_needed_when_messages_exceed_window(self):
-        """Test consolidation logic: should trigger when messages > memory_window."""
         session = create_session_with_messages("test:trigger", 60)
 
         total_messages = len(session.messages)
@@ -225,10 +177,7 @@ class TestConsolidationTriggerConditions:
 
 
 class TestLastConsolidatedEdgeCases:
-    """Test last_consolidated edge cases and data corruption scenarios."""
-
     def test_last_consolidated_exceeds_message_count(self):
-        """Test behavior when last_consolidated > len(messages) (data corruption)."""
         session = create_session_with_messages("test:corruption", 10)
         session.last_consolidated = 20
 
@@ -240,7 +189,6 @@ class TestLastConsolidatedEdgeCases:
         assert len(old_messages) == 0
 
     def test_last_consolidated_negative_value(self):
-        """Test behavior with negative last_consolidated (invalid state)."""
         session = create_session_with_messages("test:negative", 10)
         session.last_consolidated = -5
 
@@ -253,7 +201,6 @@ class TestLastConsolidatedEdgeCases:
         assert old_messages[-1]["content"] == "msg6"
 
     def test_messages_added_after_consolidation(self):
-        """Test correct behavior when new messages arrive after consolidation."""
         session = create_session_with_messages("test:new_messages", 40)
         session.last_consolidated = len(session.messages) - KEEP_COUNT  # 15
 

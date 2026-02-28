@@ -75,10 +75,6 @@ class MemoryStore:
         archive_all: bool = False,
         memory_window: int = 50,
     ) -> bool:
-        """Consolidate old messages into MEMORY.md + HISTORY.md via LLM tool call.
-
-        Returns True on success (including no-op), False on failure.
-        """
         if archive_all:
             old_messages = session.messages
             keep_count = 0

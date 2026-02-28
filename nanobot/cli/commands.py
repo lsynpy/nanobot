@@ -39,7 +39,6 @@ _SAVED_TERM_ATTRS = None  # original termios settings, restored on exit
 
 
 def _flush_pending_tty_input() -> None:
-    """Drop unread keypresses typed while the model was generating output."""
     try:
         fd = sys.stdin.fileno()
         if not os.isatty(fd):
@@ -67,7 +66,6 @@ def _flush_pending_tty_input() -> None:
 
 
 def _restore_terminal() -> None:
-    """Restore terminal to its original state (echo, line buffering, etc.)."""
     if _SAVED_TERM_ATTRS is None:
         return
     try:
@@ -79,7 +77,6 @@ def _restore_terminal() -> None:
 
 
 def _init_prompt_session() -> None:
-    """Create the prompt_toolkit session with persistent file history."""
     global _PROMPT_SESSION, _SAVED_TERM_ATTRS
 
     # Save terminal state so we can restore it on exit
@@ -101,7 +98,6 @@ def _init_prompt_session() -> None:
 
 
 def _print_agent_response(response: str, render_markdown: bool) -> None:
-    """Render assistant response with consistent terminal styling."""
     content = response or ""
     body = Markdown(content) if render_markdown else Text(content)
     console.print()
@@ -111,18 +107,10 @@ def _print_agent_response(response: str, render_markdown: bool) -> None:
 
 
 def _is_exit_command(command: str) -> bool:
-    """Return True when input should end interactive chat."""
     return command.lower() in EXIT_COMMANDS
 
 
 async def _read_interactive_input_async() -> str:
-    """Read user input using prompt_toolkit (handles paste, history, display).
-
-    prompt_toolkit natively handles:
-    - Multiline paste (bracketed paste mode)
-    - History navigation (up/down arrows)
-    - Clean display (no ghost characters or artifacts)
-    """
     if _PROMPT_SESSION is None:
         raise RuntimeError("Call _init_prompt_session() first")
     try:
@@ -155,7 +143,6 @@ def main(
 
 @app.command()
 def onboard():
-    """Initialize nanobot configuration and workspace."""
     from nanobot.config.loader import get_config_path, load_config, save_config
     from nanobot.config.schema import Config
     from nanobot.utils.helpers import get_workspace_path
@@ -202,7 +189,6 @@ def onboard():
 
 
 def _make_provider(config: Config):
-    """Create the appropriate LLM provider from config."""
     from nanobot.providers.custom_provider import DashScopeProvider
 
     model = config.agents.defaults.model
@@ -227,7 +213,6 @@ def gateway(
     port: int = typer.Option(18790, "--port", "-p", help="Gateway port"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose output"),
 ):
-    """Start the nanobot gateway."""
     from nanobot.agent.loop import AgentLoop
     from nanobot.bus.queue import MessageBus
     from nanobot.channels.manager import ChannelManager
@@ -400,7 +385,6 @@ def agent(
         False, "--logs/--no-logs", help="Show nanobot runtime logs during chat"
     ),
 ):
-    """Interact with the agent directly."""
     from loguru import logger
 
     from nanobot.agent.loop import AgentLoop
@@ -581,7 +565,6 @@ app.add_typer(channels_app, name="channels")
 
 @channels_app.command("status")
 def channels_status():
-    """Show channel status."""
     from nanobot.config.loader import load_config
 
     config = load_config()
@@ -639,7 +622,6 @@ def channels_status():
 
 
 def _get_bridge_dir() -> Path:
-    """Get the bridge directory, setting it up if needed."""
     import shutil
     import subprocess
 
@@ -733,7 +715,6 @@ app.add_typer(cron_app, name="cron")
 def cron_list(
     all: bool = typer.Option(False, "--all", "-a", help="Include disabled jobs"),
 ):
-    """List scheduled jobs."""
     from nanobot.config.loader import get_data_dir
     from nanobot.cron.service import CronService
 
@@ -803,7 +784,6 @@ def cron_add(
         None, "--channel", help="Channel for delivery (e.g. 'telegram', 'whatsapp')"
     ),
 ):
-    """Add a scheduled job."""
     from nanobot.config.loader import get_data_dir
     from nanobot.cron.service import CronService
     from nanobot.cron.types import CronSchedule
@@ -887,7 +867,6 @@ def cron_run(
     job_id: str = typer.Argument(..., help="Job ID to run"),
     force: bool = typer.Option(False, "--force", "-f", help="Run even if disabled"),
 ):
-    """Manually run a job."""
     from loguru import logger
 
     from nanobot.agent.loop import AgentLoop
@@ -952,7 +931,6 @@ def cron_run(
 
 @app.command()
 def status():
-    """Show nanobot status."""
     from nanobot.config.loader import get_config_path, load_config
 
     config_path = get_config_path()

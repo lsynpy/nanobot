@@ -32,13 +32,11 @@ class Session:
     last_consolidated: int = 0  # Number of messages already consolidated to files
 
     def add_message(self, role: str, content: str, **kwargs: Any) -> None:
-        """Add a message to the session."""
         msg = {"role": role, "content": content, "timestamp": datetime.now().isoformat(), **kwargs}
         self.messages.append(msg)
         self.updated_at = datetime.now()
 
     def get_history(self, max_messages: int = 500) -> list[dict[str, Any]]:
-        """Return unconsolidated messages for LLM input, aligned to a user turn."""
         unconsolidated = self.messages[self.last_consolidated :]
         sliced = unconsolidated[-max_messages:]
 
@@ -58,7 +56,6 @@ class Session:
         return out
 
     def clear(self) -> None:
-        """Clear all messages and reset session to initial state."""
         self.messages = []
         self.last_consolidated = 0
         self.updated_at = datetime.now()
@@ -78,25 +75,14 @@ class SessionManager:
         self._cache: dict[str, Session] = {}
 
     def _get_session_path(self, key: str) -> Path:
-        """Get the file path for a session."""
         safe_key = safe_filename(key.replace(":", "_"))
         return self.sessions_dir / f"{safe_key}.jsonl"
 
     def _get_legacy_session_path(self, key: str) -> Path:
-        """Legacy global session path (~/.nanobot/sessions/)."""
         safe_key = safe_filename(key.replace(":", "_"))
         return self.legacy_sessions_dir / f"{safe_key}.jsonl"
 
     def get_or_create(self, key: str) -> Session:
-        """
-        Get an existing session or create a new one.
-
-        Args:
-            key: Session key (usually channel:chat_id).
-
-        Returns:
-            The session.
-        """
         if key in self._cache:
             return self._cache[key]
 
@@ -108,7 +94,6 @@ class SessionManager:
         return session
 
     def _load(self, key: str) -> Session | None:
-        """Load a session from disk."""
         path = self._get_session_path(key)
         if not path.exists():
             legacy_path = self._get_legacy_session_path(key)
@@ -159,7 +144,6 @@ class SessionManager:
             return None
 
     def save(self, session: Session) -> None:
-        """Save a session to disk."""
         path = self._get_session_path(session.key)
 
         with open(path, "w", encoding="utf-8") as f:
@@ -178,16 +162,9 @@ class SessionManager:
         self._cache[session.key] = session
 
     def invalidate(self, key: str) -> None:
-        """Remove a session from the in-memory cache."""
         self._cache.pop(key, None)
 
     def list_sessions(self) -> list[dict[str, Any]]:
-        """
-        List all sessions.
-
-        Returns:
-            List of session info dicts.
-        """
         sessions = []
 
         for path in self.sessions_dir.glob("*.jsonl"):

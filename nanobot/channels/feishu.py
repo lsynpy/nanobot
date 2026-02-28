@@ -270,7 +270,6 @@ class FeishuChannel(BaseChannel):
         self._loop: asyncio.AbstractEventLoop | None = None
 
     async def start(self) -> None:
-        """Start the Feishu bot with WebSocket long connection."""
         if not FEISHU_AVAILABLE:
             logger.error("Feishu SDK not installed. Run: pip install lark-oapi")
             return
@@ -332,7 +331,6 @@ class FeishuChannel(BaseChannel):
             await asyncio.sleep(1)
 
     async def stop(self) -> None:
-        """Stop the Feishu bot."""
         self._running = False
         if self._ws_client:
             try:
@@ -342,7 +340,6 @@ class FeishuChannel(BaseChannel):
         logger.info("Feishu bot stopped")
 
     def _add_reaction_sync(self, message_id: str, emoji_type: str) -> None:
-        """Sync helper for adding reaction (runs in thread pool)."""
         try:
             request = (
                 CreateMessageReactionRequest.builder()
@@ -367,11 +364,6 @@ class FeishuChannel(BaseChannel):
             logger.warning("Error adding reaction: {}", e)
 
     async def _add_reaction(self, message_id: str, emoji_type: str = "THUMBSUP") -> None:
-        """
-        Add a reaction emoji to a message (non-blocking).
-
-        Common emoji types: THUMBSUP, OK, EYES, DONE, OnIt, HEART
-        """
         if not self._client or not Emoji:
             return
 
@@ -390,7 +382,6 @@ class FeishuChannel(BaseChannel):
 
     @staticmethod
     def _parse_md_table(table_text: str) -> dict | None:
-        """Parse a markdown table into a Feishu table element."""
         lines = [line.strip() for line in table_text.strip().split("\n") if line.strip()]
         if len(lines) < 3:
             return None
@@ -414,7 +405,6 @@ class FeishuChannel(BaseChannel):
         }
 
     def _build_card_elements(self, content: str) -> list[dict]:
-        """Split content into div/markdown + table elements for Feishu card."""
         elements, last_end = [], 0
         for m in self._TABLE_RE.finditer(content):
             before = content[last_end : m.start()]
@@ -430,7 +420,6 @@ class FeishuChannel(BaseChannel):
         return elements or [{"tag": "markdown", "content": content}]
 
     def _split_headings(self, content: str) -> list[dict]:
-        """Split content by headings, converting headings to div elements."""
         protected = content
         code_blocks = []
         for m in self._CODE_BLOCK_RE.finditer(content):
@@ -480,7 +469,6 @@ class FeishuChannel(BaseChannel):
     }
 
     def _upload_image_sync(self, file_path: str) -> str | None:
-        """Upload an image to Feishu and return the image_key."""
         try:
             with open(file_path, "rb") as f:
                 request = (
@@ -505,7 +493,6 @@ class FeishuChannel(BaseChannel):
             return None
 
     def _upload_file_sync(self, file_path: str) -> str | None:
-        """Upload a file to Feishu and return the file_key."""
         ext = os.path.splitext(file_path)[1].lower()
         file_type = self._FILE_TYPE_MAP.get(ext, "stream")
         file_name = os.path.basename(file_path)
@@ -539,7 +526,6 @@ class FeishuChannel(BaseChannel):
     def _download_image_sync(
         self, message_id: str, image_key: str
     ) -> tuple[bytes | None, str | None]:
-        """Download an image from Feishu message by message_id and image_key."""
         try:
             request = (
                 GetMessageResourceRequest.builder()
@@ -567,7 +553,6 @@ class FeishuChannel(BaseChannel):
     def _download_file_sync(
         self, message_id: str, file_key: str, resource_type: str = "file"
     ) -> tuple[bytes | None, str | None]:
-        """Download a file/audio/media from a Feishu message by message_id and file_key."""
         try:
             request = (
                 GetMessageResourceRequest.builder()
@@ -597,12 +582,6 @@ class FeishuChannel(BaseChannel):
     async def _download_and_save_media(
         self, msg_type: str, content_json: dict, message_id: str | None = None
     ) -> tuple[str | None, str]:
-        """
-        Download media from Feishu and save to local disk.
-
-        Returns:
-            (file_path, content_text) - file_path is None if download failed
-        """
         loop = asyncio.get_running_loop()
         media_dir = Path.home() / ".nanobot" / "media"
         media_dir.mkdir(parents=True, exist_ok=True)
@@ -639,7 +618,6 @@ class FeishuChannel(BaseChannel):
     def _send_message_sync(
         self, receive_id_type: str, receive_id: str, msg_type: str, content: str
     ) -> bool:
-        """Send a single message (text/image/file/interactive) synchronously."""
         try:
             request = (
                 CreateMessageRequest.builder()
@@ -670,7 +648,6 @@ class FeishuChannel(BaseChannel):
             return False
 
     async def send(self, msg: OutboundMessage) -> None:
-        """Send a message through Feishu, including media (images/files) if present."""
         if not self._client:
             logger.warning("Feishu client not initialized")
             return
@@ -726,15 +703,10 @@ class FeishuChannel(BaseChannel):
             logger.error("Error sending Feishu message: {}", e)
 
     def _on_message_sync(self, data: "P2ImMessageReceiveV1") -> None:
-        """
-        Sync handler for incoming messages (called from WebSocket thread).
-        Schedules async handling in the main event loop.
-        """
         if self._loop and self._loop.is_running():
             asyncio.run_coroutine_threadsafe(self._on_message(data), self._loop)
 
     async def _on_message(self, data: "P2ImMessageReceiveV1") -> None:
-        """Handle incoming message from Feishu."""
         try:
             event = data.event
             message = event.message

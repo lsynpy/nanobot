@@ -17,7 +17,6 @@ MAX_REDIRECTS = 5  # Limit redirects to prevent DoS attacks
 
 
 def _strip_tags(text: str) -> str:
-    """Remove HTML tags and decode entities."""
     text = re.sub(r"<script[\s\S]*?</script>", "", text, flags=re.I)
     text = re.sub(r"<style[\s\S]*?</style>", "", text, flags=re.I)
     text = re.sub(r"<[^>]+>", "", text)
@@ -25,13 +24,11 @@ def _strip_tags(text: str) -> str:
 
 
 def _normalize(text: str) -> str:
-    """Normalize whitespace."""
     text = re.sub(r"[ \t]+", " ", text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
 def _validate_url(url: str) -> tuple[bool, str]:
-    """Validate URL: must be http(s) with valid domain."""
     try:
         p = urlparse(url)
         if p.scheme not in ("http", "https"):
@@ -44,8 +41,6 @@ def _validate_url(url: str) -> tuple[bool, str]:
 
 
 class WebSearchTool(Tool):
-    """Search the web using Brave Search API."""
-
     name = "web_search"
     description = "Search the web. Returns titles, URLs, and snippets."
     parameters = {

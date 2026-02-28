@@ -18,7 +18,6 @@ def _now_ms() -> int:
 
 
 def _compute_next_run(schedule: CronSchedule, now_ms: int) -> int | None:
-    """Compute next run time in ms."""
     if schedule.kind == "at":
         return schedule.at_ms if schedule.at_ms and schedule.at_ms > now_ms else None
 
@@ -48,7 +47,6 @@ def _compute_next_run(schedule: CronSchedule, now_ms: int) -> int | None:
 
 
 def _validate_schedule_for_add(schedule: CronSchedule) -> None:
-    """Validate schedule fields that would otherwise create non-runnable jobs."""
     if schedule.tz and schedule.kind != "cron":
         raise ValueError("tz can only be used with cron schedules")
 
@@ -76,7 +74,6 @@ class CronService:
         self._running = False
 
     def _load_store(self) -> CronStore:
-        """Load jobs from disk."""
         if self._store:
             return self._store
 
@@ -125,7 +122,6 @@ class CronService:
         return self._store
 
     def _save_store(self) -> None:
-        """Save jobs to disk."""
         if not self._store:
             return
 
@@ -169,7 +165,6 @@ class CronService:
         self.store_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
     async def start(self) -> None:
-        """Start the cron service."""
         self._running = True
         self._load_store()
         self._recompute_next_runs()
@@ -180,14 +175,12 @@ class CronService:
         )
 
     def stop(self) -> None:
-        """Stop the cron service."""
         self._running = False
         if self._timer_task:
             self._timer_task.cancel()
             self._timer_task = None
 
     def _recompute_next_runs(self) -> None:
-        """Recompute next run times for all enabled jobs."""
         if not self._store:
             return
         now = _now_ms()
@@ -196,7 +189,6 @@ class CronService:
                 job.state.next_run_at_ms = _compute_next_run(job.schedule, now)
 
     def _get_next_wake_ms(self) -> int | None:
-        """Get the earliest next run time across all jobs."""
         if not self._store:
             return None
         times = [
@@ -205,7 +197,6 @@ class CronService:
         return min(times) if times else None
 
     def _arm_timer(self) -> None:
-        """Schedule the next timer tick."""
         if self._timer_task:
             self._timer_task.cancel()
 
@@ -224,7 +215,6 @@ class CronService:
         self._timer_task = asyncio.create_task(tick())
 
     async def _on_timer(self) -> None:
-        """Handle timer tick - run due jobs."""
         if not self._store:
             return
 
@@ -242,7 +232,6 @@ class CronService:
         self._arm_timer()
 
     async def _execute_job(self, job: CronJob) -> None:
-        """Execute a single job."""
         start_ms = _now_ms()
         logger.info("Cron: executing job '{}' ({})", job.name, job.id)
 
@@ -276,7 +265,6 @@ class CronService:
     # ========== Public API ==========
 
     def list_jobs(self, include_disabled: bool = False) -> list[CronJob]:
-        """List all jobs."""
         store = self._load_store()
         jobs = store.jobs if include_disabled else [j for j in store.jobs if j.enabled]
         return sorted(jobs, key=lambda j: j.state.next_run_at_ms or float("inf"))
@@ -291,7 +279,6 @@ class CronService:
         to: str | None = None,
         delete_after_run: bool = False,
     ) -> CronJob:
-        """Add a new job."""
         store = self._load_store()
         _validate_schedule_for_add(schedule)
         now = _now_ms()
@@ -322,7 +309,6 @@ class CronService:
         return job
 
     def remove_job(self, job_id: str) -> bool:
-        """Remove a job by ID."""
         store = self._load_store()
         before = len(store.jobs)
         store.jobs = [j for j in store.jobs if j.id != job_id]
@@ -336,7 +322,6 @@ class CronService:
         return removed
 
     def enable_job(self, job_id: str, enabled: bool = True) -> CronJob | None:
-        """Enable or disable a job."""
         store = self._load_store()
         for job in store.jobs:
             if job.id == job_id:
@@ -352,7 +337,6 @@ class CronService:
         return None
 
     async def run_job(self, job_id: str, force: bool = False) -> bool:
-        """Manually run a job."""
         store = self._load_store()
         for job in store.jobs:
             if job.id == job_id:
@@ -365,7 +349,6 @@ class CronService:
         return False
 
     def status(self) -> dict:
-        """Get service status."""
         store = self._load_store()
         return {
             "enabled": self._running,

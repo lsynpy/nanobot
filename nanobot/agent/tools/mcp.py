@@ -12,8 +12,6 @@ from nanobot.agent.tools.registry import ToolRegistry
 
 
 class MCPToolWrapper(Tool):
-    """Wraps a single MCP server tool as a nanobot Tool."""
-
     def __init__(self, session, server_name: str, tool_def, tool_timeout: int = 30):
         self._session = session
         self._original_name = tool_def.name
@@ -57,7 +55,6 @@ class MCPToolWrapper(Tool):
 async def connect_mcp_servers(
     mcp_servers: dict, registry: ToolRegistry, stack: AsyncExitStack
 ) -> None:
-    """Connect to configured MCP servers and register their tools."""
     from mcp import ClientSession, StdioServerParameters
     from mcp.client.stdio import stdio_client
 

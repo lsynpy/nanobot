@@ -10,7 +10,6 @@ from nanobot.agent.tools.base import Tool
 def _resolve_path(
     path: str, workspace: Path | None = None, allowed_dir: Path | None = None
 ) -> Path:
-    """Resolve path against workspace (if relative) and enforce directory restriction."""
     p = Path(path).expanduser()
     if not p.is_absolute() and workspace:
         p = workspace / p
@@ -24,8 +23,6 @@ def _resolve_path(
 
 
 class ReadFileTool(Tool):
-    """Tool to read file contents."""
-
     def __init__(self, workspace: Path | None = None, allowed_dir: Path | None = None):
         self._workspace = workspace
         self._allowed_dir = allowed_dir

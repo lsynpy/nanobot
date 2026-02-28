@@ -57,7 +57,6 @@ class SubagentManager:
         origin_chat_id: str = "direct",
         session_key: str | None = None,
     ) -> str:
-        """Spawn a subagent to execute a task in the background."""
         task_id = str(uuid.uuid4())[:8]
         display_label = label or task[:30] + ("..." if len(task) > 30 else "")
         origin = {"channel": origin_channel, "chat_id": origin_chat_id}
@@ -86,7 +85,6 @@ class SubagentManager:
         label: str,
         origin: dict[str, str],
     ) -> None:
-        """Execute the subagent task and announce the result."""
         logger.info("Subagent [{}] starting task: {}", task_id, label)
 
         try:
@@ -194,7 +192,6 @@ class SubagentManager:
         origin: dict[str, str],
         status: str,
     ) -> None:
-        """Announce the subagent result to the main agent via the message bus."""
         status_text = "completed successfully" if status == "ok" else "failed"
 
         announce_content = f"""[Subagent '{label}' {status_text}]
@@ -220,7 +217,6 @@ Summarize this naturally for the user. Keep it brief (1-2 sentences). Do not men
         )
 
     def _build_subagent_prompt(self, task: str) -> str:
-        """Build a focused system prompt for the subagent."""
         import time as _time
         from datetime import datetime
 
@@ -258,7 +254,6 @@ Skills are available at: {self.workspace}/skills/ (read SKILL.md files as needed
 When you have completed the task, provide a clear summary of your findings or actions."""
 
     async def cancel_by_session(self, session_key: str) -> int:
-        """Cancel all subagents for the given session. Returns count cancelled."""
         tasks = [
             self._running_tasks[tid]
             for tid in self._session_tasks.get(session_key, [])
@@ -271,5 +266,4 @@ When you have completed the task, provide a clear summary of your findings or ac
         return len(tasks)
 
     def get_running_count(self) -> int:
-        """Return the number of currently running subagents."""
         return len(self._running_tasks)

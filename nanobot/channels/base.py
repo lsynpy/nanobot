@@ -20,54 +20,23 @@ class BaseChannel(ABC):
     name: str = "base"
 
     def __init__(self, config: Any, bus: MessageBus):
-        """
-        Initialize the channel.
-
-        Args:
-            config: Channel-specific configuration.
-            bus: The message bus for communication.
-        """
         self.config = config
         self.bus = bus
         self._running = False
 
     @abstractmethod
     async def start(self) -> None:
-        """
-        Start the channel and begin listening for messages.
-
-        This should be a long-running async task that:
-        1. Connects to the chat platform
-        2. Listens for incoming messages
-        3. Forwards messages to the bus via _handle_message()
-        """
         pass
 
     @abstractmethod
     async def stop(self) -> None:
-        """Stop the channel and clean up resources."""
         pass
 
     @abstractmethod
     async def send(self, msg: OutboundMessage) -> None:
-        """
-        Send a message through this channel.
-
-        Args:
-            msg: The message to send.
-        """
         pass
 
     def is_allowed(self, sender_id: str) -> bool:
-        """
-        Check if a sender is allowed to use this bot.
-
-        Args:
-            sender_id: The sender's identifier.
-
-        Returns:
-            True if allowed, False otherwise.
-        """
         allow_list = getattr(self.config, "allow_from", [])
 
         # If no allow list, allow everyone
@@ -92,19 +61,6 @@ class BaseChannel(ABC):
         metadata: dict[str, Any] | None = None,
         session_key: str | None = None,
     ) -> None:
-        """
-        Handle an incoming message from the chat platform.
-
-        This method checks permissions and forwards to the bus.
-
-        Args:
-            sender_id: The sender's identifier.
-            chat_id: The chat/channel identifier.
-            content: Message text content.
-            media: Optional list of media URLs.
-            metadata: Optional channel-specific metadata.
-            session_key: Optional session key override (e.g. thread-scoped sessions).
-        """
         if not self.is_allowed(sender_id):
             logger.warning(
                 "Access denied for sender {} on channel {}. "
@@ -128,5 +84,4 @@ class BaseChannel(ABC):
 
     @property
     def is_running(self) -> bool:
-        """Check if the channel is running."""
         return self._running

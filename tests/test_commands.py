@@ -3,20 +3,19 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from nanobot.providers.litellm_provider import LiteLLMProvider
+from nanobot.providers.openai_codex_provider import _strip_model_prefix
+from nanobot.providers.registry import find_by_model
 from typer.testing import CliRunner
 
 from nanobot.cli.commands import app
 from nanobot.config.schema import Config
-from nanobot.providers.litellm_provider import LiteLLMProvider
-from nanobot.providers.openai_codex_provider import _strip_model_prefix
-from nanobot.providers.registry import find_by_model
 
 runner = CliRunner()
 
 
 @pytest.fixture
 def mock_paths():
-    """Mock config/workspace paths for test isolation."""
     with (
         patch("nanobot.config.loader.get_config_path") as mock_cp,
         patch("nanobot.config.loader.save_config") as mock_sc,
@@ -42,7 +41,6 @@ def mock_paths():
 
 
 def test_onboard_fresh_install(mock_paths):
-    """No existing config — should create from scratch."""
     config_file, workspace_dir = mock_paths
 
     result = runner.invoke(app, ["onboard"])
@@ -57,7 +55,6 @@ def test_onboard_fresh_install(mock_paths):
 
 
 def test_onboard_existing_config_refresh(mock_paths):
-    """Config exists, user declines overwrite — should refresh (load-merge-save)."""
     config_file, workspace_dir = mock_paths
     config_file.write_text('{"existing": true}')
 
@@ -71,7 +68,6 @@ def test_onboard_existing_config_refresh(mock_paths):
 
 
 def test_onboard_existing_config_overwrite(mock_paths):
-    """Config exists, user confirms overwrite — should reset to defaults."""
     config_file, workspace_dir = mock_paths
     config_file.write_text('{"existing": true}')
 
@@ -84,7 +80,6 @@ def test_onboard_existing_config_overwrite(mock_paths):
 
 
 def test_onboard_existing_workspace_safe_create(mock_paths):
-    """Workspace exists — should not recreate, but still add missing templates."""
     config_file, workspace_dir = mock_paths
     workspace_dir.mkdir(parents=True)
     config_file.write_text("{}")

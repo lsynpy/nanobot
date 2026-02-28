@@ -214,3 +214,8 @@ Run `bash core_agent_lines.sh` to verify the core agent line count (excludes cha
 ## Version
 
 Current version: **0.1.4.post2**
+
+## Qwen Added Memories
+
+- Project comment style: Code should be self-explanatory without verbose comments. Remove simple docstrings that just restate what code does (e.g., """Get the default configuration file path."""). Keep design notes, implementation details, implementation decisions, and tricky things (e.g., class-level architecture docs explaining what the component does and why).
+- Git commit messages should be one-line and shortened when possible, with signature (e.g., `<msg>. - QwenCode`)

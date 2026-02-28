@@ -19,15 +19,6 @@ class GroqTranscriptionProvider:
         self.api_url = "https://api.groq.com/openai/v1/audio/transcriptions"
 
     async def transcribe(self, file_path: str | Path) -> str:
-        """
-        Transcribe an audio file using Groq.
-
-        Args:
-            file_path: Path to the audio file.
-
-        Returns:
-            Transcribed text.
-        """
         if not self.api_key:
             logger.warning("Groq API key not configured for transcription")
             return ""

@@ -26,7 +26,6 @@ class LLMResponse:
 
     @property
     def has_tool_calls(self) -> bool:
-        """Check if response contains tool calls."""
         return len(self.tool_calls) > 0
 
 
@@ -96,22 +95,8 @@ class LLMProvider(ABC):
         max_tokens: int = 4096,
         temperature: float = 0.7,
     ) -> LLMResponse:
-        """
-        Send a chat completion request.
-
-        Args:
-            messages: List of message dicts with 'role' and 'content'.
-            tools: Optional list of tool definitions.
-            model: Model identifier (provider-specific).
-            max_tokens: Maximum tokens in response.
-            temperature: Sampling temperature.
-
-        Returns:
-            LLMResponse with content and/or tool calls.
-        """
         pass
 
     @abstractmethod
     def get_default_model(self) -> str:
-        """Get the default model for this provider."""
         pass

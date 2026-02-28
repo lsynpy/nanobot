@@ -83,10 +83,6 @@ class HeartbeatService:
         return None
 
     async def _decide(self, content: str) -> tuple[str, str]:
-        """Phase 1: ask LLM to decide skip/run via virtual tool call.
-
-        Returns (action, tasks) where action is 'skip' or 'run'.
-        """
         response = await self.provider.chat(
             messages=[
                 {

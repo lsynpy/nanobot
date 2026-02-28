@@ -6,24 +6,20 @@ from pathlib import Path
 
 
 def ensure_dir(path: Path) -> Path:
-    """Ensure directory exists, return it."""
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
 def get_data_path() -> Path:
-    """~/.nanobot data directory."""
     return ensure_dir(Path.home() / ".nanobot")
 
 
 def get_workspace_path(workspace: str | None = None) -> Path:
-    """Resolve and ensure workspace path. Defaults to ~/.nanobot/workspace."""
     path = Path(workspace).expanduser() if workspace else Path.home() / ".nanobot" / "workspace"
     return ensure_dir(path)
 
 
 def timestamp() -> str:
-    """Current ISO timestamp."""
     return datetime.now().isoformat()
 
 
@@ -31,7 +27,6 @@ _UNSAFE_CHARS = re.compile(r'[<>:"/\\|?*]')
 
 
 def safe_filename(name: str) -> str:
-    """Replace unsafe path characters with underscores."""
     return _UNSAFE_CHARS.sub("_", name).strip()
 
 

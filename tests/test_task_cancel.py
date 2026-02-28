@@ -9,7 +9,6 @@ import pytest
 
 
 def _make_loop():
-    """Create a minimal AgentLoop with mocked dependencies."""
     from nanobot.agent.loop import AgentLoop
     from nanobot.bus.queue import MessageBus
 

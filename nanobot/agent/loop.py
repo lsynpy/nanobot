@@ -107,7 +107,6 @@ class AgentLoop:
         self._register_default_tools()
 
     def _register_default_tools(self) -> None:
-        """Register the default set of tools."""
         allowed_dir = self.workspace if self.restrict_to_workspace else None
         for cls in (ReadFileTool, WriteFileTool, EditFileTool, ListDirTool):
             self.tools.register(cls(workspace=self.workspace, allowed_dir=allowed_dir))
@@ -127,7 +126,6 @@ class AgentLoop:
             self.tools.register(CronTool(self.cron_service))
 
     async def _connect_mcp(self) -> None:
-        """Connect to configured MCP servers (one-time, lazy)."""
         if self._mcp_connected or self._mcp_connecting or not self._mcp_servers:
             return
         self._mcp_connecting = True
@@ -150,7 +148,6 @@ class AgentLoop:
             self._mcp_connecting = False
 
     def _set_tool_context(self, channel: str, chat_id: str, message_id: str | None = None) -> None:
-        """Update context for all tools that need routing info."""
         for name in ("message", "spawn", "cron"):
             if tool := self.tools.get(name):
                 if hasattr(tool, "set_context"):
@@ -158,15 +155,12 @@ class AgentLoop:
 
     @staticmethod
     def _strip_think(text: str | None) -> str | None:
-        """Remove <think>…</think> blocks that some models embed in content."""
         if not text:
             return None
         return re.sub(r"<think>[\s\S]*?</think>", "", text).strip() or None
 
     @staticmethod
     def _tool_hint(tool_calls: list) -> str:
-        """Format tool calls as concise hint, e.g. 'web_search("query")'."""
-
         def _fmt(tc):
             val = next(iter(tc.arguments.values()), None) if tc.arguments else None
             if not isinstance(val, str):
@@ -180,7 +174,6 @@ class AgentLoop:
         initial_messages: list[dict],
         on_progress: Callable[..., Awaitable[None]] | None = None,
     ) -> tuple[str | None, list[str], list[dict]]:
-        """Run the agent iteration loop. Returns (final_content, tools_used, messages)."""
         messages = initial_messages
         iteration = 0
         final_content = None
@@ -250,7 +243,6 @@ class AgentLoop:
         return final_content, tools_used, messages
 
     async def run(self) -> None:
-        """Run the agent loop, dispatching messages as tasks to stay responsive to /stop."""
         self._running = True
         await self._connect_mcp()
         logger.info("Agent loop started")
@@ -275,7 +267,6 @@ class AgentLoop:
                 )
 
     async def _handle_stop(self, msg: InboundMessage) -> None:
-        """Cancel all active tasks and subagents for the session."""
         tasks = self._active_tasks.pop(msg.session_key, [])
         cancelled = sum(1 for t in tasks if not t.done() and t.cancel())
         for t in tasks:
@@ -295,7 +286,6 @@ class AgentLoop:
         )
 
     async def _dispatch(self, msg: InboundMessage) -> None:
-        """Process a message under the global lock."""
         async with self._processing_lock:
             try:
                 response = await self._process_message(msg)
@@ -324,7 +314,6 @@ class AgentLoop:
                 )
 
     async def close_mcp(self) -> None:
-        """Close MCP connections."""
         if self._mcp_stack:
             try:
                 await self._mcp_stack.aclose()
@@ -333,7 +322,6 @@ class AgentLoop:
             self._mcp_stack = None
 
     def stop(self) -> None:
-        """Stop the agent loop."""
         self._running = False
         logger.info("Agent loop stopping")
 
@@ -343,7 +331,6 @@ class AgentLoop:
         session_key: str | None = None,
         on_progress: Callable[[str], Awaitable[None]] | None = None,
     ) -> OutboundMessage | None:
-        """Process a single inbound message and return the response."""
         # System messages: parse origin from chat_id ("channel:chat_id")
         if msg.channel == "system":
             channel, chat_id = (
@@ -488,7 +475,6 @@ class AgentLoop:
         )
 
     def _save_turn(self, session: Session, messages: list[dict], skip: int) -> None:
-        """Save new-turn messages into session, truncating large tool results."""
         from datetime import datetime
 
         for m in messages[skip:]:
@@ -520,7 +506,6 @@ class AgentLoop:
         session.updated_at = datetime.now()
 
     async def _consolidate_memory(self, session, archive_all: bool = False) -> bool:
-        """Delegate to MemoryStore.consolidate(). Returns True on success."""
         return await MemoryStore(self.workspace).consolidate(
             session,
             self.provider,
@@ -537,7 +522,6 @@ class AgentLoop:
         chat_id: str = "direct",
         on_progress: Callable[[str], Awaitable[None]] | None = None,
     ) -> str:
-        """Process a message directly (for CLI or cron usage)."""
         await self._connect_mcp()
         msg = InboundMessage(channel=channel, sender_id="user", chat_id=chat_id, content=content)
         response = await self._process_message(

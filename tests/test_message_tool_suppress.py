@@ -22,8 +22,6 @@ def _make_loop(tmp_path: Path) -> AgentLoop:
 
 
 class TestMessageToolSuppressLogic:
-    """Final reply suppressed only when message tool sends to the same target."""
-
     @pytest.mark.asyncio
     async def test_suppress_when_sent_to_same_target(self, tmp_path: Path) -> None:
         loop = _make_loop(tmp_path)

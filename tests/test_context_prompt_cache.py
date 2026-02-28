@@ -24,7 +24,6 @@ def _make_workspace(tmp_path: Path) -> Path:
 
 
 def test_system_prompt_stays_stable_when_clock_changes(tmp_path, monkeypatch) -> None:
-    """System prompt should not change just because wall clock minute changes."""
     monkeypatch.setattr(datetime_module, "datetime", _FakeDatetime)
 
     workspace = _make_workspace(tmp_path)
@@ -40,7 +39,6 @@ def test_system_prompt_stays_stable_when_clock_changes(tmp_path, monkeypatch) ->
 
 
 def test_runtime_context_is_separate_untrusted_user_message(tmp_path) -> None:
-    """Runtime metadata should be a separate user message before the actual user message."""
     workspace = _make_workspace(tmp_path)
     builder = ContextBuilder(workspace)
 

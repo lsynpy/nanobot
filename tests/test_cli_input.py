@@ -8,7 +8,6 @@ from nanobot.cli import commands
 
 @pytest.fixture
 def mock_prompt_session():
-    """Mock the global prompt session."""
     mock_session = MagicMock()
     mock_session.prompt_async = AsyncMock()
     with (
@@ -20,7 +19,6 @@ def mock_prompt_session():
 
 @pytest.mark.asyncio
 async def test_read_interactive_input_async_returns_input(mock_prompt_session):
-    """Test that _read_interactive_input_async returns the user input from prompt_session."""
     mock_prompt_session.prompt_async.return_value = "hello world"
 
     result = await commands._read_interactive_input_async()
@@ -33,7 +31,6 @@ async def test_read_interactive_input_async_returns_input(mock_prompt_session):
 
 @pytest.mark.asyncio
 async def test_read_interactive_input_async_handles_eof(mock_prompt_session):
-    """Test that EOFError converts to KeyboardInterrupt."""
     mock_prompt_session.prompt_async.side_effect = EOFError()
 
     with pytest.raises(KeyboardInterrupt):
@@ -41,7 +38,6 @@ async def test_read_interactive_input_async_handles_eof(mock_prompt_session):
 
 
 def test_init_prompt_session_creates_session():
-    """Test that _init_prompt_session initializes the global session."""
     # Ensure global is None before test
     commands._PROMPT_SESSION = None
 

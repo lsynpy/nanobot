@@ -31,8 +31,6 @@ class ChannelManager:
         self._init_channels()
 
     def _init_channels(self) -> None:
-        """Initialize channels based on config."""
-
         # Feishu channel
         if self.config.channels.feishu.enabled:
             try:
@@ -44,14 +42,12 @@ class ChannelManager:
                 logger.warning("Feishu channel not available: {}", e)
 
     async def _start_channel(self, name: str, channel: BaseChannel) -> None:
-        """Start a channel and log any exceptions."""
         try:
             await channel.start()
         except Exception as e:
             logger.error("Failed to start channel {}: {}", name, e)
 
     async def start_all(self) -> None:
-        """Start all channels and the outbound dispatcher."""
         if not self.channels:
             logger.warning("No channels enabled")
             return
@@ -69,7 +65,6 @@ class ChannelManager:
         await asyncio.gather(*tasks, return_exceptions=True)
 
     async def stop_all(self) -> None:
-        """Stop all channels and the dispatcher."""
         logger.info("Stopping all channels...")
 
         # Stop dispatcher
@@ -89,7 +84,6 @@ class ChannelManager:
                 logger.error("Error stopping {}: {}", name, e)
 
     async def _dispatch_outbound(self) -> None:
-        """Dispatch outbound messages to the appropriate channel."""
         logger.info("Outbound dispatcher started")
 
         while True:
@@ -120,11 +114,9 @@ class ChannelManager:
                 break
 
     def get_channel(self, name: str) -> BaseChannel | None:
-        """Get a channel by name."""
         return self.channels.get(name)
 
     def get_status(self) -> dict[str, Any]:
-        """Get status of all channels."""
         return {
             name: {"enabled": True, "running": channel.is_running}
             for name, channel in self.channels.items()
@@ -132,5 +124,4 @@ class ChannelManager:
 
     @property
     def enabled_channels(self) -> list[str]:
-        """Get list of enabled channel names."""
         return list(self.channels.keys())

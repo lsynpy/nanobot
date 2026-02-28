@@ -20,7 +20,6 @@ class InboundMessage:
 
     @property
     def session_key(self) -> str:
-        """Unique key for session identification."""
         return self.session_key_override or f"{self.channel}:{self.chat_id}"
 
 

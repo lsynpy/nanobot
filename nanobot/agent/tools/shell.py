@@ -10,8 +10,6 @@ from nanobot.agent.tools.base import Tool
 
 
 class ExecTool(Tool):
-    """Tool to execute shell commands."""
-
     def __init__(
         self,
         timeout: int = 60,
