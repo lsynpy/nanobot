@@ -18,3 +18,10 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
       - id: fix-byte-order-marker
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: destroyed-symlinks
+      - id: forbid-new-submodules
+      - id: mixed-line-ending
+      - id: no-commit-to-branch
+        args: [--branch, main]
