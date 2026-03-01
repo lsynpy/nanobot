@@ -13,7 +13,7 @@ class _FakeDatetime(real_datetime):
     current = real_datetime(2026, 2, 24, 13, 59)
 
     @classmethod
-    def now(cls, tz=None):  # type: ignore[override]
+    def now(cls, tz=None):
         return cls.current
 
 

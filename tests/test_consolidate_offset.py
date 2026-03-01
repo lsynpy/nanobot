@@ -446,8 +446,8 @@ class TestConsolidationDeduplicationGuard:
             bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
         )
 
-        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))
-        loop.tools.get_definitions = MagicMock(return_value=[])
+        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))  # type: ignore[assignment]
+        loop.tools.get_definitions = MagicMock(return_value=[])  # type: ignore[assignment]
 
         session = loop.sessions.get_or_create("cli:test")
         for i in range(15):
@@ -486,8 +486,8 @@ class TestConsolidationDeduplicationGuard:
             bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
         )
 
-        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))
-        loop.tools.get_definitions = MagicMock(return_value=[])
+        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))  # type: ignore[assignment]
+        loop.tools.get_definitions = MagicMock(return_value=[])  # type: ignore[assignment]
 
         session = loop.sessions.get_or_create("cli:test")
         for i in range(15):
@@ -534,8 +534,8 @@ class TestConsolidationDeduplicationGuard:
             bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
         )
 
-        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))
-        loop.tools.get_definitions = MagicMock(return_value=[])
+        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))  # type: ignore[assignment]
+        loop.tools.get_definitions = MagicMock(return_value=[])  # type: ignore[assignment]
 
         session = loop.sessions.get_or_create("cli:test")
         for i in range(15):
@@ -577,8 +577,8 @@ class TestConsolidationDeduplicationGuard:
             bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
         )
 
-        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))
-        loop.tools.get_definitions = MagicMock(return_value=[])
+        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))  # type: ignore[assignment]
+        loop.tools.get_definitions = MagicMock(return_value=[])  # type: ignore[assignment]
 
         session = loop.sessions.get_or_create("cli:test")
         for i in range(15):
@@ -635,8 +635,8 @@ class TestConsolidationDeduplicationGuard:
             bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
         )
 
-        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))
-        loop.tools.get_definitions = MagicMock(return_value=[])
+        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))  # type: ignore[assignment]
+        loop.tools.get_definitions = MagicMock(return_value=[])  # type: ignore[assignment]
 
         session = loop.sessions.get_or_create("cli:test")
         for i in range(5):
@@ -679,8 +679,8 @@ class TestConsolidationDeduplicationGuard:
             bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
         )
 
-        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))
-        loop.tools.get_definitions = MagicMock(return_value=[])
+        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))  # type: ignore[assignment]
+        loop.tools.get_definitions = MagicMock(return_value=[])  # type: ignore[assignment]
 
         session = loop.sessions.get_or_create("cli:test")
         for i in range(15):
@@ -736,8 +736,8 @@ class TestConsolidationDeduplicationGuard:
             bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
         )
 
-        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))
-        loop.tools.get_definitions = MagicMock(return_value=[])
+        loop.provider.chat = AsyncMock(return_value=LLMResponse(content="ok", tool_calls=[]))  # type: ignore[assignment]
+        loop.tools.get_definitions = MagicMock(return_value=[])  # type: ignore[assignment]
 
         session = loop.sessions.get_or_create("cli:test")
         for i in range(3):

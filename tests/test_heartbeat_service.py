@@ -3,10 +3,10 @@ import asyncio
 import pytest
 
 from pawpsicle.heartbeat.service import HeartbeatService
-from pawpsicle.providers.base import LLMResponse, ToolCallRequest
+from pawpsicle.providers.base import LLMProvider, LLMResponse, ToolCallRequest
 
 
-class DummyProvider:
+class DummyProvider(LLMProvider):
     def __init__(self, responses: list[LLMResponse]):
         self._responses = list(responses)
 
@@ -14,6 +14,9 @@ class DummyProvider:
         if self._responses:
             return self._responses.pop(0)
         return LLMResponse(content="", tool_calls=[])
+
+    def get_default_model(self) -> str:
+        return "dummy/model"
 
 
 @pytest.mark.asyncio

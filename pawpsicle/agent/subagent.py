@@ -1,12 +1,10 @@
-"""Subagent manager for background task execution."""
-
 from __future__ import annotations
 
 import asyncio
 import json
 import uuid
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from loguru import logger
 
@@ -16,15 +14,11 @@ from pawpsicle.agent.tools.shell import ExecTool
 from pawpsicle.agent.tools.web import WebFetchTool, WebSearchTool
 from pawpsicle.bus.events import InboundMessage
 from pawpsicle.bus.queue import MessageBus
+from pawpsicle.config.schema import ExecToolConfig
 from pawpsicle.providers.base import LLMProvider
-
-if TYPE_CHECKING:
-    from pawpsicle.config.schema import ExecToolConfig
 
 
 class SubagentManager:
-    """Manages background subagent execution."""
-
     def __init__(
         self,
         provider: LLMProvider,
