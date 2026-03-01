@@ -61,8 +61,8 @@ echo ""
 docker buildx build \
   --platform "${PLATFORM}" \
   -f Dockerfile \
-  -t "${REGISTRY}/${ALIYUN_NAMESPACE}/nanobot:${NEW_VERSION}" \
-  -t "${REGISTRY}/${ALIYUN_NAMESPACE}/nanobot:latest" \
+  -t "${REGISTRY}/${ALIYUN_NAMESPACE}/pawpsicle:${NEW_VERSION}" \
+  -t "${REGISTRY}/${ALIYUN_NAMESPACE}/pawpsicle:latest" \
   --push \
   .
 

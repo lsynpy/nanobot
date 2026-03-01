@@ -17,7 +17,11 @@ docs/
 venv/
 __pycache__/
 poetry.lock
+skills-lock.json
 .pytest_cache/
+.ruff_cache/
+.rumdl_cache/
 botpy.log
 tests/
 deploy/.env
+.claude/

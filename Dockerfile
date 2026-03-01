@@ -25,17 +25,17 @@ RUN apt-get update && \
 RUN uv pip install --system --no-cache -r requirements.txt && \
     rm -f requirements.txt
 
-# Copy source and install nanobot
-COPY nanobot/ nanobot/
+# Copy source and install pawpsicle
+COPY pawpsicle/ pawpsicle/
 RUN uv pip install --system --no-cache .
 
 # Create config directory and initialize pre-commit for AI agent
-RUN mkdir -p /root/.nanobot && \
+RUN mkdir -p /root/.pawpsicle && \
     git config --global --add safe.directory /app && \
     pre-commit install
 
 # Gateway default port
 EXPOSE 18790
 
-ENTRYPOINT ["nanobot"]
+ENTRYPOINT ["pawpsicle"]
 CMD ["status"]

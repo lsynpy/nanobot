@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstall nanobot from VPS
+# Uninstall pawpsicle from VPS
 
 set -e
 
@@ -20,8 +20,8 @@ echo "=== Uninstall from ${VPS_HOSTNAME} ==="
 echo ""
 
 ssh "${VPS_HOSTNAME}" bash << 'EOF'
-docker stop nanobot-gateway 2>/dev/null || true
-docker rm nanobot-gateway 2>/dev/null || true
+docker stop pawpsicle-gateway 2>/dev/null || true
+docker rm pawpsicle-gateway 2>/dev/null || true
 echo "✅ Container removed"
-echo "Config preserved at: /root/.nanobot"
+echo "Config preserved at: /root/.pawpsicle"
 EOF

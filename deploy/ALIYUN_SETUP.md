@@ -2,11 +2,11 @@
 
 ## Concepts
 
-| Term | Example | Purpose |
-|------|---------|---------|
-| **Login Username** | `your-email@example.com` | Aliyun account for `docker login` |
-| **Fixed Password** | `xxxxxxxx` | Registry password (set in console) |
-| **Namespace** | `your-namespace` | Image path (`registry/namespace/image`) |
+|               Term |                  Example |                                 Purpose |
+|-------------------:|-------------------------:|----------------------------------------:|
+| **Login Username** | `your-email@example.com` |       Aliyun account for `docker login` |
+| **Fixed Password** |               `xxxxxxxx` |      Registry password (set in console) |
+|      **Namespace** |         `your-namespace` | Image path (`registry/namespace/image`) |
 
 ---
 
@@ -26,7 +26,7 @@
 docker login --username=your-email@example.com registry.cn-hangzhou.aliyuncs.com
 ```
 
-### 3. Login on jdc
+### 3. Login on Jdc
 
 ```bash
 ssh jdc "docker login --username=your-email@example.com registry.cn-hangzhou.aliyuncs.com"

@@ -1,6 +1,0 @@
-# rumdl configuration
-# See: https://github.com/rvben/rumdl
-
-[global]
-line-length = 100
-extend-disable = ["MD013", "MD033", "MD041", "MD040", "MD036"]

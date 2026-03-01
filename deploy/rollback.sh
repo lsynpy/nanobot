@@ -29,7 +29,7 @@ ALIYUN_NAMESPACE="${ALIYUN_NAMESPACE:-your-namespace}"
 REGION="${REGION:-cn-hangzhou}"
 
 REGISTRY="registry.${REGION}.aliyuncs.com"
-IMAGE="${REGISTRY}/${ALIYUN_NAMESPACE}/nanobot:${VERSION}"
+IMAGE="${REGISTRY}/${ALIYUN_NAMESPACE}/pawpsicle:${VERSION}"
 
 echo "=== Rollback to ${VERSION} ==="
 echo "VPS: ${VPS_HOSTNAME}"
@@ -44,15 +44,15 @@ echo "[1/4] Pulling image..."
 docker pull ${IMAGE}
 
 echo "[2/4] Stopping old container..."
-docker stop nanobot-gateway 2>/dev/null || true
-docker rm nanobot-gateway 2>/dev/null || true
+docker stop pawpsicle-gateway 2>/dev/null || true
+docker rm pawpsicle-gateway 2>/dev/null || true
 
 echo "[3/4] Starting new container..."
 docker run -d \\
-  --name nanobot-gateway \\
+  --name pawpsicle-gateway \\
   --restart unless-stopped \\
   -p ${GATEWAY_PORT}:${GATEWAY_PORT} \\
-  -v /root/.nanobot:/root/.nanobot \\
+  -v /root/.pawpsicle:/root/.pawpsicle \\
   --dns 172.17.0.1 \\
   --memory 512m \\
   --cpus 0.5 \\
@@ -60,7 +60,7 @@ docker run -d \\
 
 echo "[4/4] Verifying..."
 sleep 5
-docker ps --filter name=nanobot-gateway --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+docker ps --filter name=pawpsicle-gateway --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 echo ""
 echo "✅ Rolled back to ${VERSION}!"
@@ -68,5 +68,5 @@ EOF
 
 echo ""
 echo "Useful commands:"
-echo "  ssh ${VPS_HOSTNAME} 'docker logs -f nanobot-gateway'"
-echo "  ssh ${VPS_HOSTNAME} 'docker stats nanobot-gateway'"
+echo "  ssh ${VPS_HOSTNAME} 'docker logs -f pawpsicle-gateway'"
+echo "  ssh ${VPS_HOSTNAME} 'docker stats pawpsicle-gateway'"

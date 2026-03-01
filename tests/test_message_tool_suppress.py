@@ -5,20 +5,18 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from nanobot.agent.loop import AgentLoop
-from nanobot.agent.tools.message import MessageTool
-from nanobot.bus.events import InboundMessage, OutboundMessage
-from nanobot.bus.queue import MessageBus
-from nanobot.providers.base import LLMResponse, ToolCallRequest
+from pawpsicle.agent.loop import AgentLoop
+from pawpsicle.agent.tools.message import MessageTool
+from pawpsicle.bus.events import InboundMessage, OutboundMessage
+from pawpsicle.bus.queue import MessageBus
+from pawpsicle.providers.base import LLMResponse, ToolCallRequest
 
 
 def _make_loop(tmp_path: Path) -> AgentLoop:
     bus = MessageBus()
     provider = MagicMock()
     provider.get_default_model.return_value = "test-model"
-    return AgentLoop(
-        bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10
-    )
+    return AgentLoop(bus=bus, provider=provider, workspace=tmp_path, model="test-model", memory_window=10)
 
 
 class TestMessageToolSuppressLogic:
@@ -76,9 +74,7 @@ class TestMessageToolSuppressLogic:
         if isinstance(mt, MessageTool):
             mt.set_send_callback(AsyncMock(side_effect=lambda m: sent.append(m)))
 
-        msg = InboundMessage(
-            channel="feishu", sender_id="user1", chat_id="chat123", content="Send email"
-        )
+        msg = InboundMessage(channel="feishu", sender_id="user1", chat_id="chat123", content="Send email")
         result = await loop._process_message(msg)
 
         assert len(sent) == 1

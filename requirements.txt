@@ -1,4 +1,4 @@
-# nanobot dependencies
+# pawpsicle dependencies
 # Core runtime requirements
 
 # Core CLI

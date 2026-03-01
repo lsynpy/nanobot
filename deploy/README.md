@@ -1,4 +1,4 @@
-# nanobot Deployment to VPS
+# Pawpsicle Deployment to VPS
 
 ## Quick Start
 

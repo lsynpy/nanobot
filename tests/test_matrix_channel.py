@@ -2,17 +2,17 @@ import asyncio
 from pathlib import Path
 from types import SimpleNamespace
 
+import pawpsicle.channels.matrix as matrix_module
 import pytest
-
-import nanobot.channels.matrix as matrix_module
-from nanobot.bus.events import OutboundMessage
-from nanobot.bus.queue import MessageBus
-from nanobot.channels.matrix import (
+from pawpsicle.channels.matrix import (
     MATRIX_HTML_FORMAT,
     TYPING_NOTICE_TIMEOUT_MS,
     MatrixChannel,
 )
-from nanobot.config.schema import MatrixConfig
+
+from pawpsicle.bus.events import OutboundMessage
+from pawpsicle.bus.queue import MessageBus
+from pawpsicle.config.schema import MatrixConfig
 
 _ROOM_SEND_UNSET = object()
 
@@ -125,8 +125,7 @@ class _FakeAsyncClient:
             raise RuntimeError("upload failed")
         if isinstance(data_provider, (bytes, bytearray)):
             raise TypeError(
-                f"data_provider type {type(data_provider)!r} is not of a usable type "
-                "(Callable, IOBase)"
+                f"data_provider type {type(data_provider)!r} is not of a usable type (Callable, IOBase)"
             )
         self.upload_calls.append(
             {
@@ -181,13 +180,13 @@ async def test_start_skips_load_store_when_device_id_missing(monkeypatch, tmp_pa
         coro.close()
         return _DummyTask()
 
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
     monkeypatch.setattr(
-        "nanobot.channels.matrix.AsyncClientConfig",
+        "pawpsicle.channels.matrix.AsyncClientConfig",
         lambda **kwargs: SimpleNamespace(**kwargs),
     )
-    monkeypatch.setattr("nanobot.channels.matrix.AsyncClient", _fake_client)
-    monkeypatch.setattr("nanobot.channels.matrix.asyncio.create_task", _fake_create_task)
+    monkeypatch.setattr("pawpsicle.channels.matrix.AsyncClient", _fake_client)
+    monkeypatch.setattr("pawpsicle.channels.matrix.asyncio.create_task", _fake_create_task)
 
     channel = MatrixChannel(_make_config(device_id=""), MessageBus())
     await channel.start()
@@ -231,13 +230,13 @@ async def test_start_disables_e2ee_when_configured(monkeypatch, tmp_path) -> Non
         coro.close()
         return _DummyTask()
 
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
     monkeypatch.setattr(
-        "nanobot.channels.matrix.AsyncClientConfig",
+        "pawpsicle.channels.matrix.AsyncClientConfig",
         lambda **kwargs: SimpleNamespace(**kwargs),
     )
-    monkeypatch.setattr("nanobot.channels.matrix.AsyncClient", _fake_client)
-    monkeypatch.setattr("nanobot.channels.matrix.asyncio.create_task", _fake_create_task)
+    monkeypatch.setattr("pawpsicle.channels.matrix.AsyncClient", _fake_client)
+    monkeypatch.setattr("pawpsicle.channels.matrix.asyncio.create_task", _fake_create_task)
 
     channel = MatrixChannel(_make_config(device_id="", e2ee_enabled=False), MessageBus())
     await channel.start()
@@ -457,9 +456,7 @@ async def test_on_message_allowlist_policy_requires_room_id() -> None:
 
     channel._handle_message = _fake_handle_message  # type: ignore[method-assign]
 
-    denied_room = SimpleNamespace(
-        room_id="!denied:matrix.org", display_name="Denied", member_count=3
-    )
+    denied_room = SimpleNamespace(room_id="!denied:matrix.org", display_name="Denied", member_count=3)
     event = SimpleNamespace(sender="@alice:matrix.org", body="Hello", source={"content": {}})
     await channel._on_message(denied_room, event)
 
@@ -542,10 +539,8 @@ async def test_on_message_sets_thread_metadata_when_threaded_event() -> None:
 
 
 @pytest.mark.asyncio
-async def test_on_media_message_downloads_attachment_and_sets_metadata(
-    monkeypatch, tmp_path
-) -> None:
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+async def test_on_media_message_downloads_attachment_and_sets_metadata(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
 
     channel = MatrixChannel(_make_config(), MessageBus())
     client = _FakeAsyncClient("", "", "", None)
@@ -595,10 +590,8 @@ async def test_on_media_message_downloads_attachment_and_sets_metadata(
 
 
 @pytest.mark.asyncio
-async def test_on_media_message_sets_thread_metadata_when_threaded_event(
-    monkeypatch, tmp_path
-) -> None:
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+async def test_on_media_message_sets_thread_metadata_when_threaded_event(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
 
     channel = MatrixChannel(_make_config(), MessageBus())
     client = _FakeAsyncClient("", "", "", None)
@@ -641,7 +634,7 @@ async def test_on_media_message_sets_thread_metadata_when_threaded_event(
 
 @pytest.mark.asyncio
 async def test_on_media_message_respects_declared_size_limit(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
 
     channel = MatrixChannel(_make_config(max_media_bytes=3), MessageBus())
     client = _FakeAsyncClient("", "", "", None)
@@ -676,7 +669,7 @@ async def test_on_media_message_respects_declared_size_limit(monkeypatch, tmp_pa
 async def test_on_media_message_uses_server_limit_when_smaller_than_local_limit(
     monkeypatch, tmp_path
 ) -> None:
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
 
     channel = MatrixChannel(_make_config(max_media_bytes=10), MessageBus())
     client = _FakeAsyncClient("", "", "", None)
@@ -710,7 +703,7 @@ async def test_on_media_message_uses_server_limit_when_smaller_than_local_limit(
 
 @pytest.mark.asyncio
 async def test_on_media_message_handles_download_error(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
 
     channel = MatrixChannel(_make_config(), MessageBus())
     client = _FakeAsyncClient("", "", "", None)
@@ -744,7 +737,7 @@ async def test_on_media_message_handles_download_error(monkeypatch, tmp_path) ->
 
 @pytest.mark.asyncio
 async def test_on_media_message_decrypts_encrypted_media(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
     monkeypatch.setattr(
         matrix_module,
         "decrypt_attachment",
@@ -787,7 +780,7 @@ async def test_on_media_message_decrypts_encrypted_media(monkeypatch, tmp_path) 
 
 @pytest.mark.asyncio
 async def test_on_media_message_handles_decrypt_error(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr("nanobot.channels.matrix.get_data_dir", lambda: tmp_path)
+    monkeypatch.setattr("pawpsicle.channels.matrix.get_data_dir", lambda: tmp_path)
 
     def _raise(*args, **kwargs):
         raise matrix_module.EncryptionError("boom")
@@ -1022,9 +1015,7 @@ async def test_send_workspace_restriction_blocks_external_attachment(tmp_path) -
 
     assert client.upload_calls == []
     assert len(client.room_send_calls) == 1
-    assert (
-        client.room_send_calls[0]["content"]["body"] == "[attachment: external.txt - upload failed]"
-    )
+    assert client.room_send_calls[0]["content"]["body"] == "[attachment: external.txt - upload failed]"
 
 
 @pytest.mark.asyncio
@@ -1160,9 +1151,7 @@ async def test_send_clears_typing_when_send_fails() -> None:
     channel.client = client
 
     with pytest.raises(RuntimeError, match="send failed"):
-        await channel.send(
-            OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content="Hi")
-        )
+        await channel.send(OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content="Hi"))
 
     assert client.typing_calls[-1] == ("!room:matrix.org", False, TYPING_NOTICE_TIMEOUT_MS)
 
@@ -1174,9 +1163,7 @@ async def test_send_adds_formatted_body_for_markdown() -> None:
     channel.client = client
 
     markdown_text = "# Headline\n\n- [x] done\n\n| A | B |\n| - | - |\n| 1 | 2 |"
-    await channel.send(
-        OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text)
-    )
+    await channel.send(OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text))
 
     content = client.room_send_calls[0]["content"]
     assert content["msgtype"] == "m.text"
@@ -1195,18 +1182,14 @@ async def test_send_adds_formatted_body_for_inline_url_superscript_subscript() -
     channel.client = client
 
     markdown_text = "Visit https://example.com and x^2^ plus H~2~O."
-    await channel.send(
-        OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text)
-    )
+    await channel.send(OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text))
 
     content = client.room_send_calls[0]["content"]
     assert content["msgtype"] == "m.text"
     assert content["body"] == markdown_text
     assert content["m.mentions"] == {}
     assert content["format"] == MATRIX_HTML_FORMAT
-    assert '<a href="https://example.com" rel="noopener noreferrer">' in str(
-        content["formatted_body"]
-    )
+    assert '<a href="https://example.com" rel="noopener noreferrer">' in str(content["formatted_body"])
     assert "<sup>2</sup>" in str(content["formatted_body"])
     assert "<sub>2</sub>" in str(content["formatted_body"])
 
@@ -1218,9 +1201,7 @@ async def test_send_sanitizes_disallowed_link_scheme() -> None:
     channel.client = client
 
     markdown_text = "[click](javascript:alert(1))"
-    await channel.send(
-        OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text)
-    )
+    await channel.send(OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text))
 
     formatted_body = str(client.room_send_calls[0]["content"]["formatted_body"])
     assert "javascript:" not in formatted_body
@@ -1244,9 +1225,7 @@ async def test_send_keeps_only_mxc_image_sources() -> None:
     channel.client = client
 
     markdown_text = "![ok](mxc://example.org/mediaid) ![no](https://example.com/a.png)"
-    await channel.send(
-        OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text)
-    )
+    await channel.send(OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text))
 
     formatted_body = str(client.room_send_calls[0]["content"]["formatted_body"])
     assert 'src="mxc://example.org/mediaid"' in formatted_body
@@ -1264,9 +1243,7 @@ async def test_send_falls_back_to_plaintext_when_markdown_render_fails(monkeypat
 
     monkeypatch.setattr(matrix_module, "MATRIX_MARKDOWN", _raise)
     markdown_text = "# Headline"
-    await channel.send(
-        OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text)
-    )
+    await channel.send(OutboundMessage(channel="matrix", chat_id="!room:matrix.org", content=markdown_text))
 
     content = client.room_send_calls[0]["content"]
     assert content == {"msgtype": "m.text", "body": markdown_text, "m.mentions": {}}

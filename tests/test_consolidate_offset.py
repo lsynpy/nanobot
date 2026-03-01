@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from nanobot.session.manager import Session, SessionManager
+from pawpsicle.session.manager import Session, SessionManager
 
 # Test constants
 MEMORY_WINDOW = 50
@@ -434,10 +434,10 @@ class TestConsolidationDeduplicationGuard:
     @pytest.mark.asyncio
     async def test_consolidation_guard_prevents_duplicate_tasks(self, tmp_path: Path) -> None:
         """Concurrent messages above memory_window spawn only one consolidation task."""
-        from nanobot.agent.loop import AgentLoop
-        from nanobot.bus.events import InboundMessage
-        from nanobot.bus.queue import MessageBus
-        from nanobot.providers.base import LLMResponse
+        from pawpsicle.agent.loop import AgentLoop
+        from pawpsicle.bus.events import InboundMessage
+        from pawpsicle.bus.queue import MessageBus
+        from pawpsicle.providers.base import LLMResponse
 
         bus = MessageBus()
         provider = MagicMock()
@@ -469,19 +469,15 @@ class TestConsolidationDeduplicationGuard:
         await loop._process_message(msg)
         await asyncio.sleep(0.1)
 
-        assert consolidation_calls == 1, (
-            f"Expected exactly 1 consolidation, got {consolidation_calls}"
-        )
+        assert consolidation_calls == 1, f"Expected exactly 1 consolidation, got {consolidation_calls}"
 
     @pytest.mark.asyncio
-    async def test_new_command_guard_prevents_concurrent_consolidation(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_new_command_guard_prevents_concurrent_consolidation(self, tmp_path: Path) -> None:
         """/new command does not run consolidation concurrently with in-flight consolidation."""
-        from nanobot.agent.loop import AgentLoop
-        from nanobot.bus.events import InboundMessage
-        from nanobot.bus.queue import MessageBus
-        from nanobot.providers.base import LLMResponse
+        from pawpsicle.agent.loop import AgentLoop
+        from pawpsicle.bus.events import InboundMessage
+        from pawpsicle.bus.queue import MessageBus
+        from pawpsicle.providers.base import LLMResponse
 
         bus = MessageBus()
         provider = MagicMock()
@@ -520,20 +516,16 @@ class TestConsolidationDeduplicationGuard:
         await loop._process_message(new_msg)
         await asyncio.sleep(0.1)
 
-        assert consolidation_calls == 2, (
-            f"Expected normal + /new consolidations, got {consolidation_calls}"
-        )
-        assert max_active == 1, (
-            f"Expected serialized consolidation, observed concurrency={max_active}"
-        )
+        assert consolidation_calls == 2, f"Expected normal + /new consolidations, got {consolidation_calls}"
+        assert max_active == 1, f"Expected serialized consolidation, observed concurrency={max_active}"
 
     @pytest.mark.asyncio
     async def test_consolidation_tasks_are_referenced(self, tmp_path: Path) -> None:
         """create_task results are tracked in _consolidation_tasks while in flight."""
-        from nanobot.agent.loop import AgentLoop
-        from nanobot.bus.events import InboundMessage
-        from nanobot.bus.queue import MessageBus
-        from nanobot.providers.base import LLMResponse
+        from pawpsicle.agent.loop import AgentLoop
+        from pawpsicle.bus.events import InboundMessage
+        from pawpsicle.bus.queue import MessageBus
+        from pawpsicle.providers.base import LLMResponse
 
         bus = MessageBus()
         provider = MagicMock()
@@ -566,19 +558,17 @@ class TestConsolidationDeduplicationGuard:
         assert len(loop._consolidation_tasks) == 1, "Task must be referenced while in-flight"
 
         await asyncio.sleep(0.15)
-        assert len(loop._consolidation_tasks) == 0, (
-            "Task reference must be removed after completion"
-        )
+        assert len(loop._consolidation_tasks) == 0, "Task reference must be removed after completion"
 
     @pytest.mark.asyncio
     async def test_new_waits_for_inflight_consolidation_and_preserves_messages(
         self, tmp_path: Path
     ) -> None:
         """/new waits for in-flight consolidation and archives before clear."""
-        from nanobot.agent.loop import AgentLoop
-        from nanobot.bus.events import InboundMessage
-        from nanobot.bus.queue import MessageBus
-        from nanobot.providers.base import LLMResponse
+        from pawpsicle.agent.loop import AgentLoop
+        from pawpsicle.bus.events import InboundMessage
+        from pawpsicle.bus.queue import MessageBus
+        from pawpsicle.providers.base import LLMResponse
 
         bus = MessageBus()
         provider = MagicMock()
@@ -633,10 +623,10 @@ class TestConsolidationDeduplicationGuard:
     @pytest.mark.asyncio
     async def test_new_does_not_clear_session_when_archive_fails(self, tmp_path: Path) -> None:
         """/new must keep session data if archive step reports failure."""
-        from nanobot.agent.loop import AgentLoop
-        from nanobot.bus.events import InboundMessage
-        from nanobot.bus.queue import MessageBus
-        from nanobot.providers.base import LLMResponse
+        from pawpsicle.agent.loop import AgentLoop
+        from pawpsicle.bus.events import InboundMessage
+        from pawpsicle.bus.queue import MessageBus
+        from pawpsicle.providers.base import LLMResponse
 
         bus = MessageBus()
         provider = MagicMock()
@@ -677,10 +667,10 @@ class TestConsolidationDeduplicationGuard:
         self, tmp_path: Path
     ) -> None:
         """/new should archive only messages not yet consolidated by prior task."""
-        from nanobot.agent.loop import AgentLoop
-        from nanobot.bus.events import InboundMessage
-        from nanobot.bus.queue import MessageBus
-        from nanobot.providers.base import LLMResponse
+        from pawpsicle.agent.loop import AgentLoop
+        from pawpsicle.bus.events import InboundMessage
+        from pawpsicle.bus.queue import MessageBus
+        from pawpsicle.providers.base import LLMResponse
 
         bus = MessageBus()
         provider = MagicMock()
@@ -729,19 +719,15 @@ class TestConsolidationDeduplicationGuard:
 
         assert response is not None
         assert "new session started" in response.content.lower()
-        assert archived_count == 3, (
-            f"Expected only unconsolidated tail to archive, got {archived_count}"
-        )
+        assert archived_count == 3, f"Expected only unconsolidated tail to archive, got {archived_count}"
 
     @pytest.mark.asyncio
-    async def test_new_cleans_up_consolidation_lock_for_invalidated_session(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_new_cleans_up_consolidation_lock_for_invalidated_session(self, tmp_path: Path) -> None:
         """/new should remove lock entry for fully invalidated session key."""
-        from nanobot.agent.loop import AgentLoop
-        from nanobot.bus.events import InboundMessage
-        from nanobot.bus.queue import MessageBus
-        from nanobot.providers.base import LLMResponse
+        from pawpsicle.agent.loop import AgentLoop
+        from pawpsicle.bus.events import InboundMessage
+        from pawpsicle.bus.queue import MessageBus
+        from pawpsicle.providers.base import LLMResponse
 
         bus = MessageBus()
         provider = MagicMock()
